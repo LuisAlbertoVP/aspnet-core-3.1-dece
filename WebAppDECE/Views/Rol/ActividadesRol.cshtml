@@ -1,0 +1,167 @@
+﻿@{
+    ViewBag.Title = "Opciones de Rol";
+    var rol = "";
+    var rol_name = "";
+    if (ViewData["rol"] != null && ViewData["rol-name"] != null)
+    {
+        rol = ViewData["rol"].ToString();
+        rol_name = ViewData["rol-name"].ToString();
+    }
+}
+
+<div class="container">
+    <div class="container" style="margin-top: 150px;">
+        <h2 style="text-align:center; font-weight:bold">Actividades de Rol</h2>
+        <p style="font-weight:bold">Rol: <label>@Html.Raw(rol_name)</label></p>
+    </div>
+    <br />
+    <button type="button" class="btn btn-info pull-right" id="btn_actualizar">Guardar</button>
+    <br />
+    <div class="container" id="opciones"></div>
+</div>
+
+@section Scripts{
+    <script>
+        $(document).ready(function () {
+
+            function uploadActividadesRol() {
+                var http = new XMLHttpRequest();
+                http.open("GET", host + "/Rol/GetActividadesRol/@rol", true);
+                http.setRequestHeader("Content-Type", "application/json");
+
+                http.onreadystatechange = function () {
+                    if (http.readyState === 4 && http.status === 200) {
+                        var json = http.responseText;
+                        try {
+                            var actividades = JSON.parse(json);
+                            var ul_array = document.querySelectorAll('.list-op');
+                            for (var i = 0; i < ul_array.length; i++) {
+                                var ul = ul_array[i];
+                                var modulo = parseInt(ul.getAttribute('data-modulo'));
+                                var opcion = parseInt(ul.getAttribute('data-opcion'));
+                                var li_array = ul.children;
+                                for (var j = 0; j < li_array.length; j++) {
+                                    var li_input = li_array[j].firstChild;
+                                    for (var k = 0; k < actividades.length; k++) {
+                                        var actv = actividades[k];
+                                        if (actv['opcion']['modulo']['id'] == modulo && actv['opcion']['id'] == opcion
+                                            && actv['nombreActividad'] == li_input.value) {
+                                            li_input.checked = 'true';
+                                        }
+                                    }                     
+                                }
+                            }
+                        } catch (e) {}
+                    }
+                };
+
+                http.send();
+            }
+
+            function saveChanges() {
+                var http = new XMLHttpRequest();
+                http.open("POST", host + "/Rol/ActividadesRolInsert", false);
+                http.setRequestHeader("Content-Type", "application/json");
+
+                http.onreadystatechange = function () {
+                    if (http.readyState === 4 && http.status === 200) {
+                        var json = http.responseText;
+                        try {
+                            var resp = JSON.parse(json);
+                            var modal = createCustomModal("Mensaje");
+                            modal.nodes('Actividades de @Html.Raw(rol_name) fueron actualizadas correctamente!');
+                            modal.onExit(function () {
+                                window.location.replace(host + "/Rol/Actualizar/@rol");
+                            });
+                            modal.fire();
+                        } catch (e) {
+                            showAlert("Error", "Actividades de @Html.Raw(rol_name) no fueron actualizadas! "+e);
+                        }
+                    }
+                };
+                var ul_array = document.querySelectorAll('.list-op');
+                var actividades = [];
+                for (var i = 0; i < ul_array.length; i++) {
+                    var ul = ul_array[i];
+                    var modulo = parseInt(ul.getAttribute('data-modulo'));
+                    var opcion = parseInt(ul.getAttribute('data-opcion'));
+                    var li_array = ul.children;
+                    
+                    for (var j = 0; j < li_array.length; j++) {
+                        var li_input = li_array[j].firstChild;
+                        if (li_input.checked) {
+                            actividades.push(
+                                { 'NombreActividad': li_input.value, "Opcion": { "Id": opcion, "Modulo": { "Id": modulo } } }
+                            );
+                        }                        
+                    }
+                }
+                var json_send = JSON.stringify({ "Id": @rol, "Actividades": actividades });
+                http.send(json_send);
+            }
+
+            document.getElementById('btn_actualizar').addEventListener('click', saveChanges);
+
+            function createCheckbox(clave, valor) {
+                var li = document.createElement('li');
+                var check = document.createElement('input');
+                var label = document.createElement('label');
+                check.type = 'checkbox';
+                check.value = clave;
+                label.innerHTML = valor;
+                li.append(check, label);
+                li.style.float = 'left';
+                li.style.width = '40%';
+                return li;
+            }
+
+            function createCheckboxes(op) {
+                var ul = document.createElement('ul');
+                ul.classList.add('list-unstyled', 'list-op');
+                ul.setAttribute('data-modulo', op['modulo']['id']);
+                ul.setAttribute('data-opcion', op['id']);
+                ul.style.setProperty('z-index', '0', 'important');
+                var actvs = op['actividades'];
+                for (var i = 0; i < actvs.length; i++) {
+                    ul.appendChild(createCheckbox(actvs[i]['nombreActividad'], '&nbsp; ' + actvs[i]['descripcion']));
+                }       
+                return ul;
+            }
+
+            function createDiv(op) {
+                var div = document.createElement('div');
+                div.style.margin = '15px 15px';
+                div.className = 'row';
+                var title = document.createElement('h4');
+                title.innerHTML = op['descripcionLarga'] + '</br> </br>';
+                title.className = 'w-100';
+                div.append(title, createCheckboxes(op));
+                title.style.setProperty('z-index', '0', 'important');
+                title.style.fontWeight = "bold";
+                return div;
+            }
+
+            function uploadOpcionesRoles() {
+                var http = new XMLHttpRequest();
+                http.open("GET", host + "/Rol/GetActividadesOpcionRol/@rol", true);
+                http.setRequestHeader("Content-Type", "application/json");
+
+                http.onreadystatechange = function () {
+                    if (http.readyState === 4 && http.status === 200) {
+                        var json = http.responseText;
+                        try {
+                            var opciones = JSON.parse(json);
+                            for (var i = 0; i < opciones.length; i++) {
+                                document.getElementById('opciones').appendChild(createDiv(opciones[i]));
+                            }
+                            uploadActividadesRol();
+                        } catch (e) {}
+                    }
+                };
+                http.send();
+            }
+
+            uploadOpcionesRoles();
+        });
+    </script>
+}

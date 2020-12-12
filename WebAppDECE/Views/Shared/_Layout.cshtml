@@ -1,0 +1,88 @@
+﻿@using System.Security.Claims;
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0" />
+    <meta name="description" content="DECE" />
+    <meta name="author" content="Luis Velastegui, Richard Moreira" />
+
+    <title>@Html.Raw(ViewBag.Title)</title>
+
+    <link rel="stylesheet" type="text/css" href="/css/navbar.css" />
+    <link rel="stylesheet" type="text/css" href="/css/font-awesome.css" />
+    <link rel="stylesheet" type="text/css" href="/vendor/bootstrap/css/bootstrap.css" />
+
+    <link rel="stylesheet" type="text/css" href="/fonts/font-awesome-4.7.0/css/font-awesome.css" />
+    <link rel="stylesheet" type="text/css" href="/css/landing-page.css" />
+    <link rel="stylesheet" type="text/css" href="/css/form.css" />
+    <link rel="icon" type="image/png" href="/images/icons/favicon.ico" />
+
+    @RenderSection("Styles", false)
+
+    <script src="/vendor/jquery/jquery.js"></script>
+    <script src="/vendor/bootstrap/js/bootstrap.js"></script>
+</head>
+<body id="body">
+    <header class="position-fixed">
+        @if (Context.User.Identity.IsAuthenticated)
+        {
+            <span id="button-menu" class="fa fa-bars"> &nbsp; <img src="/img/dptdece.png" style="width: 250px; margin-bottom: 12px;" alt="" /></span>
+            <nav class="navegacion">
+                <ul class="menu" id="menu_principal">
+                    <li class="title-menu"> <span class="fa fa-user icon-menu"></span>@Context.User.Identity.Name</li>
+                    <li><a asp-controller="Home" asp-action="Index"><span class="fa fa-home icon-menu"></span>P&aacute;gina Principal</a></li>
+                    <li><a asp-controller="Usuario" asp-action="Actualizar" asp-route-id="@Context.User.Claims.First(claim => claim.Type == ClaimTypes.Email).Value"><span class="fa fa-cogs icon-menu"></span>Configurar Cuenta</a></li>
+                </ul>
+            </nav>
+            <a class="fa fa-user-circle icon-menu" style="float:right;color:#ffffff;margin-top:15px">&nbsp; @Context.User.Identity.Name</a>
+            <script src="/js/system.js"></script>
+        }
+        else
+        {
+            <nav class="navbar">
+                <a class="navbar-brand text-white"> &nbsp; <img src="/img/dptdece.png" style="width: 250px; margin-bottom: 12px;" alt="" /></a>
+                <a class="btn btn-danger" asp-controller="Home" asp-action="Login">Ingresar</a>
+            </nav>
+        }
+    </header>
+
+    <partial name="_CookieConsentPartial" />
+
+    <main role="main" class="pb-3">
+        <div id="myModal"></div>
+        @RenderBody()
+    </main>
+
+    <footer class="footer bg-light position-relative">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-6 h-100 text-center text-lg-left my-auto">
+                    <ul class="list-inline mb-2">
+                        <li class="list-inline-item">
+                            <a href="#">Acerca de </a>
+                        </li>
+                        <li class="list-inline-item">&sdot;</li>
+                        <li class="list-inline-item">
+                            <a href="#">Contacto</a>
+                        </li>
+                        <li class="list-inline-item">&sdot;</li>
+                        <li class="list-inline-item">
+                            <a href="#">Terminos de Uso</a>
+                        </li>
+                        <li class="list-inline-item">&sdot;</li>
+                        <li class="list-inline-item">
+                            <a href="#">Políticas de Privacidad</a>
+                        </li>
+                    </ul>
+                    <p class="text-muted small mb-4 mb-lg-0">&copy; BackCoresa S.A 2020. Todos los Derechos Reservados.</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="/js/nav.js"></script>
+    <script src="/js/modals.js"></script>
+    @RenderSection("Scripts", false)
+</body>
+</html>

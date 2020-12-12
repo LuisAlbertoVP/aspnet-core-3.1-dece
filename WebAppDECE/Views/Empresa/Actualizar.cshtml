@@ -1,0 +1,76 @@
+@model WebAppDECE.Models.Seguridad.Empresa;
+
+@{
+    var action = "Registrar";
+    var route = "";
+    if(ViewData["id"] != null)
+    {
+        action = "Modificar";
+        route = ViewData["id"].ToString();
+    }
+    ViewBag.Title = action + " Empresa";
+}
+
+<br />
+<div class="container conf">
+    <form class="row" asp-controller="Empresa" asp-action="@action" asp-route-id="@route" method="post">
+        <div class="col-md-3 conf-left">
+            <img src="/img/dece3.png" alt="" />
+            <h3>DEPARTAMENTO</h3>
+            <p>Unidad Educativa " "</p>
+            <input type="submit" value="Confirmar"  /><br />
+        </div>
+        <div class="col-md-9 conf-right">
+
+            <div class="tab-content" id="myTabContent">
+                <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
+                    <h3 class="conf-heading">@action Empresa</h3>
+                    <div class="row conf-form">
+                        <div class="col-md-6">
+                            @if (action.Equals("Registrar"))
+                            { 
+                                <div class="form-group">
+                                    <p>Id Empresa</p>
+                                    <input asp-for="Id" type="text" class="form-control" placeholder="Id de Empresa" />
+                                    <span asp-validation-for="Id" class="text-danger"></span>
+                                </div>
+                            }
+                            <div class="form-group">
+                                <p>Nombre</p>
+                                <input asp-for="Nombre" type="text" class="form-control" placeholder="Nombre" />
+                                <span asp-validation-for="Nombre" class="text-danger"></span>
+                            </div>
+                            <div class="form-group">
+                                <p>R.U.C</p>
+                                <input asp-for="Ruc" type="number" class="form-control" placeholder="R.U.C" />
+                                <span asp-validation-for="Ruc" class="text-danger"></span>
+                            </div>
+                            <div class="form-group">
+                                <p>Direcci&oacute;n</p>
+                                <input asp-for="Direccion" type="text" class="form-control" placeholder="Dirección" />
+                                <span asp-validation-for="Direccion" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <p>Tel&eacute;fono</p>
+                                <input asp-for="Telefono" type="number" class="form-control" placeholder="Teléfono" />
+                                <span asp-validation-for="Telefono" class="text-danger"></span>
+                            </div>
+                            <div class="form-group">
+                                <p>Raz&oacute;n Social</p>
+                                <input asp-for="RazonSocial" type="text" class="form-control" placeholder="Razón Social" />
+                                <span asp-validation-for="RazonSocial" class="text-danger"></span>
+                            </div>
+                            <div class="form-group">
+                                <p>E-Mail</p>
+                                <input asp-for="Mail" type="email" class="form-control" placeholder="E-Mail" />
+                                <span asp-validation-for="Mail" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>

@@ -1,0 +1,114 @@
+@model WebAppDECE.Models.ViewModel.ActualizarRol;
+
+@{
+    var action = "Ingresar";
+    var id = "";
+    if (ViewData["id"] != null)
+    {
+        action = "Actualizar";
+        id = ViewData["id"].ToString();
+    }
+    ViewBag.Title = action + " Rol";
+}
+
+<div class="container conf" style="margin-top: 110px;">
+    <form class="row" asp-controller="Rol" asp-action="@action" asp-route-id="@id" method="post">
+        <div class="col-md-3 conf-left">
+            <img src="/img/dece3.png" alt="" />
+            <h3>DEPARTAMENTO</h3>
+            <p>Unidad Educativa " "</p>
+            <input type="submit" value="Confirmar" /><br />
+        </div>
+        <div class="col-md-9 conf-right">
+
+            <div class="tab-content" id="myTabContent">
+                <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
+                    <h3 class="conf-heading">@action Rol</h3>
+                    <div class="row conf-form">
+                        <div class="col-md-6">
+                            @if (action.Equals("Ingresar"))
+                            {
+                                <div class="form-group">
+                                    <p>Id Rol</p>
+                                    <input asp-for="Id" type="text" class="form-control" placeholder="Id Rol" />
+                                    <span asp-validation-for="Id" class="text-danger"></span>
+                                </div>
+                            }
+                            <div class="form-group">
+                                <p>Descripci&oacute;n</p>
+                                <input asp-for="Descripcion" type="text" class="form-control" placeholder="Descripci&oacute;n" id="desc_rol"/>
+                                <span asp-validation-for="Descripcion" class="text-danger"></span>
+                            </div>
+                            <div class="form-group">
+                                <p>Empresa</p>
+                                <input asp-for="IdEmpresa" type="hidden" id="empresa" />
+                                <div class="input-group">
+                                    <input type="text" class="form-control" placeholder="Seleccionar" aria-label="Seleccionar" aria-describedby="basic-addon2" id="empresa-nombre" disabled="disabled" />
+                                    <div class="input-group-append" id="admin" style="cursor: pointer">
+                                        <span class="input-group-text" id="basic-addon2">+</span>
+                                    </div>
+                                </div>
+                                <span asp-validation-for="IdEmpresa" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            @if (action.Equals("Actualizar"))
+                            {
+                                <div class="form-group">
+                                    <p>Opciones</p>
+                                    <a class="btn btn-info" href="/Rol/OpcionesRol/@id" id="mod_op">Modificar</a>
+                                </div>
+                                <script>
+                                    var mod_op = document.getElementById('mod_op');
+                                    mod_op.href += '/' + document.getElementById('desc_rol').value;
+                                </script>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+@section Scripts{
+    <script src="/js/confirmModal.js"></script>
+    <script src="/js/busquedaEmpresas.js"></script>
+    @if (ViewData["success"] != null)
+    {
+        var array = ViewData["success"] as string[];
+        var type = array[0];
+        var id_rol = array[1];
+        var name = array[2];
+        switch (type)
+        {
+            case "registrar":
+                <script>
+                    swal({
+                        title: "Desea asignar Opciones?",
+                        text: "Se asignaran opciones para rol: @Html.Raw(name)",
+                        icon: "warning",
+                        buttons: true,
+                        dangerMode: true,
+                    }).then((willDelete) => {
+                        if (willDelete) {
+                            window.location.replace(host + "/Rol/OpcionesRol/@id_rol/@Html.Raw(name)");
+                        } else {
+                            swal("Cancelado!").then((success) => window.location.href = host + "/Rol/Consultar");
+                        }
+                    });
+                </script>
+            break;
+            case "modificar":
+                <script>
+                    var modal = createCustomModal("Mensaje");
+                    modal.nodes('Rol modificado exitosamente!');
+                    modal.onExit(function () {
+                        window.location.replace(host + "/Rol/Consultar");
+                    });
+                    modal.fire();
+                </script>
+            break;
+        }
+    }
+}

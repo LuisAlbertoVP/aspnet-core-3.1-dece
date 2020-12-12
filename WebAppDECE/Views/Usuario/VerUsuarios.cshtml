@@ -1,0 +1,50 @@
+﻿@{
+    ViewBag.Title = "Ver Usuarios";
+}
+
+@section Styles{ 
+    <style type="text/css">
+        .blockquote {
+            padding: 10px;
+            border: skyblue 5px double;
+            border-top-left-radius: 20px;
+            border-bottom-right-radius: 20px;
+        }
+    </style>
+}
+
+<h4 style="margin-top: 150px;"><b>Mantenimiento Usuario</b></h4>
+
+<br />
+<div class="blockquote">
+    &nbsp;&nbsp;
+    <a href="/Usuario/Ingresar" class="btn btn-primary">Nuevo</a>
+</div>
+<br />
+<br />
+<!-- Table User -->
+<table id="tabla-usuarios" class="table table-light table-responsive table-striped table-bordered table-hover table-condensed ">
+    <thead class="thead-dark">
+        <tr>
+            <th>Modificar</th>
+            <th>Nombre Completo</th>
+            <th>Id Usuario</th>
+            <th>Empresa</th>
+            <th>Fecha Expiraci&oacute;n</th>
+            <th>Ingreso Usuario</th>
+            <th>Fecha de Ingreso</th>
+            <th>Modific&oacute; Usuario</th>
+            <th>Fecha Modificaci&oacute;n</th>
+            <th>Estado</th>
+        </tr>
+    </thead>
+    <tbody id="tbody_usuarios"></tbody>
+</table>
+
+@section Scripts{
+    <script src="/js/confirmModal.js"></script>
+    <script src="/js/tableFilter.js"></script>
+    <script src="/js/usuarios.js"></script>
+}
+
+

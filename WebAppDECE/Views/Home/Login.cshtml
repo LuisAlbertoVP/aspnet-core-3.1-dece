@@ -1,0 +1,30 @@
+﻿@model WebAppDECE.Models.ViewModel.Login;
+
+@{
+    ViewBag.Title = "Login";
+}
+
+@section Styles{
+    <link rel="stylesheet" type="text/css" href="/css/login.css" />
+}
+
+<section class="login-page">
+    <form asp-controller="Home" asp-action="Login" method="post">
+        <div class="box">
+            <div class="form-head">
+                <h2 style="font-weight: bold;">Login <img style="width:100%;height:100%;" src="/img/dece3.png" /></h2>
+            </div>
+            <div class="form-body">
+                <input asp-for="Id" type="text" placeholder="E-mail" />
+                <span asp-validation-for="Id" class="text-danger bg-white border-white" style="border-radius: 20px;"></span>
+                <input asp-for="Clave" type="Password" placeholder="Contraseña" />
+                <span asp-validation-for="Clave" class="text-danger bg-white border-white" style="border-radius: 20px;"></span>
+            </div>
+            <div class="form-footer mt-3">
+                <input type="submit" value="Ingresar" />
+            </div>
+        </div>
+    </form>
+</section>
+
+

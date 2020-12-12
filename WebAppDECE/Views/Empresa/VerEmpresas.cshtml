@@ -1,0 +1,38 @@
+﻿@{
+    ViewBag.Title = "Ver Empresas";
+}
+
+<div>
+    <br /><br /><br /><br />
+    <form class="form-inline mt-3">
+        <div class="form-group mx-sm-3 mb-2" style="z-index:0 !important;">
+            <input id="search" class="form-control" type="text" placeholder="Escribir aquí" />
+        </div>
+        <button style="z-index:0 !important;" type="submit" class="btn btn-primary mb-2" onclick="fillTable(); return false;">Buscar</button>
+    </form>
+</div>
+<table class="table table-responsive-lg table-hover ">
+    <thead>
+        <tr>
+            <th>M&aacute;s</th>
+            <th>#</th>
+            <th>Id de Empresa</th>
+            <th>Nombre</th>
+            <th>Tel&eacute;fono</th>
+            <th>E-Mail</th>
+            <th>Usuario de Ingreso</th>
+            <th>Fecha de Ingreso</th>
+            <th>Usuario Modificado</th>
+            <th>Fecha Modificada</th>
+            <th>Modificar</th>
+            <th>Eliminar</th>
+        </tr>
+    </thead>
+    <tbody id="tablaEmpresas"></tbody>
+</table>
+
+@section Scripts{
+    <script src="/js/empresas.js"></script>
+}
+
+

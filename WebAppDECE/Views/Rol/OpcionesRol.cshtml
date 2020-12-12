@@ -1,0 +1,158 @@
+﻿@{
+    ViewBag.Title = "Opciones de Rol";
+    var rol = "";
+    var rol_name = "";
+    if (ViewData["rol"] != null && ViewData["rol-name"] != null)
+    {
+        rol = ViewData["rol"].ToString();
+        rol_name = ViewData["rol-name"].ToString();
+    }
+}
+
+@section Styles{
+    <link rel="stylesheet" type="text/css" href="/css/roluser.css" />
+    <style>
+        .container {
+            box-sizing: border-box;
+            margin: 0 auto;
+            max-width: 500px;
+            padding: 0 20px;
+            width: 100%;
+        }
+    </style>
+}
+
+<div class="container">
+    <div class="container" style="margin-top: 150px;">
+        <h2 style="text-align:center; font-weight:bold">Opciones de Rol</h2>
+        <p style="font-weight:bold">Rol: <label>@Html.Raw(rol_name)</label></p>
+    </div>
+    <form>
+        <select multiple="multiple" id="opcion"></select>
+    </form>
+    <br />
+    <button type="button" class="btn btn-info pull-right" id="btn_actualizar">Guardar</button>
+    <a class="btn btn-info pull-left" href="/Rol/ActividadesRol/@rol/@rol_name">Actividades</a>
+    <br />
+</div>
+
+@section Scripts{
+    <script src="/js/confirmModal.js"></script>
+    <script src="/js/multiSelect.js"></script>
+    <script>
+        $(document).ready(function () {
+            var select = document.getElementById("opcion");
+
+            function uploadOpcionesRoles() {
+                var http = new XMLHttpRequest();
+                http.open("GET", host + "/Rol/GetOpcionesRol/@rol", true);
+                http.setRequestHeader("Content-Type", "application/json");
+
+                http.onreadystatechange = function () {
+                    if (http.readyState === 4 && http.status === 200) {
+                        var json = http.responseText; 
+                        try {
+                            var opciones = JSON.parse(json);
+                            var a_array = document.querySelectorAll('.non-selected-wrapper a');
+                            for (var i = 0; i < a_array.length; i++) {
+                                var a = a_array[i];
+                                for (var j = 0; j < opciones.length; j++) {
+                                    if (a.getAttribute('data-clave-2') == opciones[j]['id']) {
+                                        var event = new Event('click');
+                                        a.addEventListener('click', function (e) {
+                                            toggle_option(select, e, {});
+                                        });
+                                        a.dispatchEvent(event);
+                                    }
+                                }
+                            }
+                        } catch (e) {}
+                    }
+                };
+                http.send();
+            }
+
+            function uploadRoles() {
+                var http = new XMLHttpRequest();
+                http.open("GET", host + "/Opcion/GetOpciones/-1", true);
+                http.setRequestHeader("Content-Type", "application/json");
+
+                http.onreadystatechange = function () {
+                    if (http.readyState === 4 && http.status === 200) {
+                        var json = http.responseText; 
+                        try {
+                            var opciones = JSON.parse(json);
+                            for (var i = 0; i < opciones.length; i++) {
+                                var option = document.createElement('option');
+                                option.setAttribute('data-clave', opciones[i]['modulo']['id']);
+                                option.setAttribute('data-clave-2', opciones[i]['id']);
+                                option.innerHTML = opciones[i]['descripcionLarga'];
+                                select.appendChild(option);
+                            }
+                            multi(select, {
+                                non_selected_header: "Opciones",
+                                selected_header: "Opciones Seleccionados"
+                            });                          
+                        } catch (e) {
+                            showAlert("Advertencia", "Opciones no encontradas!");
+                        }
+                        uploadOpcionesRoles();
+                    }
+                };
+                http.send();
+            }
+
+            uploadRoles();
+
+            function saveChanges() {
+                var http = new XMLHttpRequest();
+                http.open("POST", host + "/Rol/OpcionesRolInsert", false);
+                http.setRequestHeader("Content-Type", "application/json");
+
+                http.onreadystatechange = function () {
+                    if (http.readyState === 4 && http.status === 200) {
+                        var json = http.responseText;
+                        try {
+                            var resp = JSON.parse(json);
+                            var modal = createCustomModal("Mensaje");
+                            modal.nodes('Opciones de @Html.Raw(rol_name) fueron actualizados correctamente!');
+                            modal.onExit(function () {
+                                window.location.replace(host + "/Rol/Actualizar/@rol");
+                            });
+                            modal.fire();
+                        } catch (e) {
+                            showAlert("Error", "Opciones de @Html.Raw(rol_name) no fueron actualizados!");
+                        }
+                    }
+                };
+
+                var selected = document.querySelectorAll('.selected-wrapper a');
+                var opciones = [];
+                for (var i = 0; i < selected.length; i++) {
+                    var idMod = parseInt(selected[i].getAttribute('data-clave'));
+                    var idOp = parseInt(selected[i].getAttribute('data-clave-2'));
+                    opciones.push({ "Id": idOp, "Modulo": { "Id": idMod } });
+                }
+                var json_send = JSON.stringify({ "Id": @rol, "Opciones": opciones });
+                http.send(json_send);
+            }
+
+            document.getElementById('btn_actualizar').addEventListener('click', function () {
+                swal({
+                    title: "Desea guardar las Opciones?",
+                    text: "Esta acción eliminará las actividades de las anteriores opciones",
+                    icon: "warning",
+                    buttons: true,
+                    dangerMode: true,
+                }).then((willDelete) => {
+                    if (willDelete) {
+                        saveChanges();
+                    } else {
+                        swal("Cancelado!");
+                    }
+                });
+            });
+        });
+    </script>
+}
+

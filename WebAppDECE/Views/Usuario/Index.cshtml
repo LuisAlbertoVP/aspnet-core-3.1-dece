@@ -1,0 +1,123 @@
+@model WebAppDECE.Models.ViewModel.ActualizarUsuario;
+
+@{
+    var action = "Ingresar";
+    var id = "";
+    if (ViewData["id"] != null)
+    {
+        action = "Actualizar";
+        id = ViewData["id"].ToString();
+    }
+    ViewBag.Title = action + " Usuario";
+}
+
+<div class="container conf" style="margin-top: 110px;">
+    <form class="row" asp-controller="Usuario" asp-action="@action" asp-route-id="@id" method="post">
+        <div class="col-md-3 conf-left">
+            <img src="/img/dece3.png" alt="" />
+            <h3>DEPARTAMENTO</h3>
+            <p>Unidad Educativa " "</p>
+            <input type="submit" value="Confirmar" /><br />
+        </div>
+        <div class="col-md-9 conf-right">
+
+            <div class="tab-content" id="myTabContent">
+                <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
+                    <h3 class="conf-heading">@action Usuario</h3>
+                    <div class="row conf-form">
+                        <div class="col-md-6">
+                            @if (action.Equals("Ingresar"))
+                            {
+                                <div class="form-group">
+                                    <p>Id Usuario</p>
+                                    <input asp-for="Id" type="text" class="form-control" placeholder="Id Usuario" autocomplete="new-password" />
+                                    <span asp-validation-for="Id" class="text-danger"></span>
+                                </div>
+                            }
+                            <div class="form-group">
+                                <p>Contrase&ntilde;a</p>
+                                <input asp-for="Clave" type="password" class="form-control" placeholder="Contrase&ntilde;a" autocomplete="new-password" />
+                                <span asp-validation-for="Clave" class="text-danger"></span>
+                            </div>
+                            <div class="form-group">
+                                <p>Confirmar Contrase&ntilde;a</p>
+                                <input asp-for="ConfirmClave" type="password" class="form-control" placeholder="Confirmar Contrase&ntilde;a" />
+                                <span asp-validation-for="ConfirmClave" class="text-danger"></span>
+                            </div>
+                            <div class="form-group">
+                                <p>Fecha Expiraci&oacute;n</p>
+                                <input asp-for="FechaExpiracion" type="date" class="form-control" placeholder="Fecha" />
+                                <span asp-validation-for="FechaExpiracion" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <p>Nombre Completo</p>
+                                <input asp-for="NombreCompleto" type="text" class="form-control" placeholder="Nombre Completo" />
+                                <span asp-validation-for="NombreCompleto" class="text-danger"></span>
+                            </div>
+                            <div class="form-group">
+                                <p>Empresa</p>
+                                <input asp-for="IdEmpresa" type="hidden" id="empresa" />
+                                <div class="input-group">
+                                    <input type="text" class="form-control" placeholder="Seleccionar" aria-label="Seleccionar" aria-describedby="basic-addon2" id="empresa-nombre" disabled="disabled" />
+                                    <div class="input-group-append" id="admin" style="cursor: pointer">
+                                        <span class="input-group-text" id="basic-addon2">+</span>
+                                    </div>
+                                </div>
+                                <span asp-validation-for="IdEmpresa" class="text-danger"></span>
+                            </div>
+                            @if (action.Equals("Actualizar"))
+                            {
+                                <div class="form-group">
+                                    <p>Roles</p>
+                                    <a class="btn btn-info" href="/Usuario/RolesUsuario/@id">Modificar</a>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+@section Scripts{
+    <script src="/js/confirmModal.js"></script>
+    <script src="/js/busquedaEmpresas.js"></script>
+    @if (ViewData["success"] != null)
+    {
+        var array = ViewData["success"] as string[];
+        var type = array[0];
+        var id_user = array[1];
+        switch (type) {
+            case "registrar":
+                <script>
+                    swal({
+                        title: "Desea asignar Roles?",
+                        text: "Se asignaran roles para usuario: @id_user",
+                        icon: "warning",
+                        buttons: true,
+                        dangerMode: true,
+                    }).then((willDelete) => {
+                        if (willDelete) {
+                            window.location.replace(host + "/Usuario/RolesUsuario/@id_user");
+                        } else {
+                            swal("Cancelado!").then((success) => window.location.href = host + "/Usuario/Consultar");
+                        }
+                    });
+                </script>
+            break;
+            case "modificar":
+                <script>
+                    var modal = createCustomModal("Mensaje");
+                    modal.nodes('Usuario modificado exitosamente!');
+                    modal.onExit(function () {
+                        window.location.replace(host + "/Usuario/Consultar");
+                    });
+                    modal.fire();
+                </script>
+            break;
+        }
+    }
+}
